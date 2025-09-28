@@ -36,11 +36,21 @@ filtered_df = df[
 st.write(f"Number of rows after filtering: {len(filtered_df)}")
 
 # -------------------------------
+# Summary Metrics
+# -------------------------------
+st.subheader("Summary Metrics")
+if not filtered_df.empty:
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Users", len(filtered_df))
+    col2.metric("Total Churned", filtered_df['is_churned'].sum())
+    col3.metric("Average Listening Time (hrs)", round(filtered_df['listening_time'].mean(),2))
+else:
+    st.warning("No data available for the selected filters.")
+
+# -------------------------------
 # Churn rate by subscription type
 # -------------------------------
-if filtered_df.empty:
-    st.warning("No data available for the selected filters.")
-else:
+if not filtered_df.empty:
     churn_rate_sub = filtered_df.groupby("subscription_type")["is_churned"].mean().reset_index()
     churn_rate_sub.rename(columns={"is_churned": "churn_rate"}, inplace=True)
     st.subheader("Churn Rate by Subscription Type")
@@ -72,6 +82,26 @@ if not filtered_df.empty:
     )
     ax.set_xlabel("Songs Played per Day")
     ax.set_ylabel("Listening Time (hours)")
+    ax.legend(title="Churned", labels=["No", "Yes"])
+    st.pyplot(fig)
+
+# -------------------------------
+# Scatter plot: skip_rate vs songs_played_per_day
+# -------------------------------
+if not filtered_df.empty:
+    st.subheader("Skip Rate vs Songs Played per Day")
+    fig, ax = plt.subplots()
+    sns.scatterplot(
+        data=filtered_df,
+        x="songs_played_per_day",
+        y="skip_rate",
+        hue="is_churned",
+        palette={0: "green", 1: "red"},
+        alpha=0.7,
+        ax=ax
+    )
+    ax.set_xlabel("Songs Played per Day")
+    ax.set_ylabel("Skip Rate")
     ax.legend(title="Churned", labels=["No", "Yes"])
     st.pyplot(fig)
 
