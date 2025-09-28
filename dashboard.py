@@ -15,6 +15,12 @@ import matplotlib.pyplot as plt
 # Load dataset
 df = pd.read_csv("spotify_churn_dataset.csv")
 
+# Clean column names
+df.columns = df.columns.str.strip()
+
+
+
+
 st.set_page_config(page_title="Spotify Churn Dashboard", layout="wide")
 st.title("🎵 Spotify Churn Analysis Dashboard")
 
